@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import {
   addToReadingList,
   clearSearch,
@@ -9,6 +9,8 @@ import {
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
+import { Subject, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
@@ -17,7 +19,10 @@ import { Book } from '@tmo/shared/models';
 })
 export class BookSearchComponent implements OnInit {
   books: ReadingListBook[];
-
+  searchText: string;
+  searchModelChanged: Subject<string> = new Subject<string>();
+  books$: Observable<ReadingListBook[]>;
+  destroy$: Subject<boolean> = new Subject<boolean>();
   searchForm = this.fb.group({
     term: ''
   });
@@ -25,16 +30,32 @@ export class BookSearchComponent implements OnInit {
   constructor(
     private readonly store: Store,
     private readonly fb: FormBuilder
-  ) {}
+  ) { }
 
   get searchTerm(): string {
     return this.searchForm.value.term;
   }
 
   ngOnInit(): void {
-    this.store.select(getAllBooks).subscribe(books => {
-      this.books = books;
-    });
+    this.books$ = this.store.pipe(select(getAllBooks));
+    this.searchModelChanged
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(newText => {
+        if (newText) {
+          this.store.dispatch(searchBooks({ term: newText }));
+        } else {
+          this.store.dispatch(clearSearch());
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   formatDate(date: void | string) {
@@ -54,9 +75,8 @@ export class BookSearchComponent implements OnInit {
 
   searchBooks() {
     if (this.searchForm.value.term) {
-      this.store.dispatch(searchBooks({ term: this.searchTerm }));
-    } else {
-      this.store.dispatch(clearSearch());
+      this.searchText = this.searchTerm;
     }
   }
 }
+
