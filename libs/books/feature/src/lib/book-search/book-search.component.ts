@@ -7,7 +7,7 @@ import {
   ReadingListBook,
   searchBooks,
   removeFromReadingList,
-  getReadingList
+  getReadingListBookById
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
@@ -21,7 +21,6 @@ import { filter, map, switchMap } from 'rxjs/operators';
 })
 export class BookSearchComponent implements OnInit {
   books: ReadingListBook[];
-  readingList$ = this.store.select(getReadingList);
 
   searchForm = this.fb.group({
     term: ''
@@ -60,13 +59,13 @@ export class BookSearchComponent implements OnInit {
     });
 
     snackBarRef.onAction().subscribe(() => {
-      this.readingList$.pipe(
-        switchMap(results => results),
-        filter(result => result.bookId === book.id)
-      ).subscribe(item => this.store.dispatch(removeFromReadingList({ item })))
+      this.store.select(getReadingListBookById(book.id)).subscribe(item => {
+        if (item) {
+          this.store.dispatch(removeFromReadingList({ item }))
+        }
+      })
     });
   }
-
 
   searchExample() {
     this.searchForm.controls.term.setValue('javascript');
