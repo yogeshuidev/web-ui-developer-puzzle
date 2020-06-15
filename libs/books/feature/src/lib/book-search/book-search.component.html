@@ -26,8 +26,8 @@
           </div>
           <p [innerHTML]="b.description"></p>
           <div>
-            <button data-testing="book-add-to-read" mat-flat-button color="primary" (click)="addBookToReadingList(b)"
-              [disabled]="b.isAdded|| b.isReadingComplete">
+            <button [attr.data-testing]="b.isReadingComplete ? 'book-finished' : 'book-add-to-read'" mat-flat-button
+              color="primary" (click)="addBookToReadingList(b)" [disabled]="b.isAdded|| b.isReadingComplete">
               {{ b.isReadingComplete ? 'Finished' : 'Want to Read' }}
             </button>
           </div>

@@ -8,7 +8,7 @@
       <div class="reading-list-item--details--author">
         {{ b.authors.join(',') }}
       </div>
-      <div class="reading-list-item--details--text-muted" *ngIf="b.finished">
+      <div class="reading-list-item--details--finished" *ngIf="b.finished">
         Finished Reading on - {{ b.finishedDate | date : 'MMM d, y, h:mm:ss a' }}
       </div>
     </div>
