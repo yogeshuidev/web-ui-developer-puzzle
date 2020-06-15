@@ -12,7 +12,6 @@ import {
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { filter, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
@@ -55,7 +54,7 @@ export class BookSearchComponent implements OnInit {
 
   openSnackBar(message: string, action: string, book: Book) {
     const snackBarRef = this._snackBar.open(message, action, {
-      duration: 2000,
+      duration: 5000,
     });
 
     snackBarRef.onAction().subscribe(() => {

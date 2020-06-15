@@ -21,7 +21,7 @@ export class ReadingListComponent {
 
   openSnackBar(message: string, action: string, book: ReadingListItem) {
     const snackBarRef = this._snackBar.open(message, action, {
-      duration: 2000,
+      duration: 5000,
     });
     snackBarRef.onAction().subscribe(() => {
       this.store.pipe(select(getBooksById(book.bookId))).subscribe(book =>

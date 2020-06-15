@@ -32,6 +32,7 @@
           <p [innerHTML]="b.description"></p>
           <div>
             <button
+              data-testing="book-add-to-read"
               mat-flat-button
               color="primary"
               (click)="addBookToReadingList(b)"
