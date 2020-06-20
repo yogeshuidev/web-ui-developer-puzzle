@@ -23,3 +23,7 @@ export const getBooksError = createSelector(
 );
 
 export const getBooks = createSelector(getBooksState, selectAll);
+
+export const getBooksById = (id) => createSelector(getBooks, (books) => {
+  return books.find(b => b.id === id);
+});
